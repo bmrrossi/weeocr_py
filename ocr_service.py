@@ -5,11 +5,12 @@ except ImportError:
 import pytesseract
 
 import utils
-from environment import UPLOAD_FOLDER
+from environment import CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL
 
 def convert_to_searchable_pdf_service(document):
     image = utils.convert_pdf_to_image(document)
-    print(pytesseract.image_to_string(Image.open(image)))
+    pdf = pytesseract.image_to_pdf_or_hocr(image[0], extension='pdf')
     
-def convert_to_unsearchable_pdf_service(document):
-    print(document)
+    with open(CONVERTIDO_FOLDER + NOME_ARQUIVO_FINAL + '.pdf', 'w+b') as file:
+        file.write(pdf)
+
