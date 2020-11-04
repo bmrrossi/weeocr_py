@@ -14,7 +14,7 @@ cd weeocr_py
 pip install -r requirements.txt
 ```
 
-Now, we need to set up the environment variables. To do this type:
+Now, we need to set up the environment variables. To do this, please type:
 
 ```
 source env.sh
