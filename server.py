@@ -1,10 +1,13 @@
 import os
 
-from flask import Flask, flash, request, abort, redirect, url_for
+from flask import Flask, flash, request, abort, redirect, url_for, jsonify
+from flask import make_response
 from werkzeug.utils import secure_filename
 
-from ocr_service import convert_to_searchable_pdf_service, convert_to_unsearchable_pdf_service
-from environment import UPLOAD_FOLDER
+import utils
+
+from ocr_service import convert_to_searchable_pdf_service
+from environment import UPLOAD_FOLDER, CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -16,19 +19,19 @@ def hello_weeocr():
 
 @app.route('/convert_to_searchable_pdf', methods=['GET', 'POST'])
 def convert_to_searchable_pdf():
-    docs = request.files['document']
-    docs.save(os.path.join(app.config['UPLOAD_FOLDER'], 
-                           secure_filename(docs.filename)))
+    document = request.files['document']
+    document.save(os.path.join(app.config['UPLOAD_FOLDER'], 
+                           secure_filename(document.filename)))
     
-    convert_to_searchable_pdf_service(docs)
+    convert_to_searchable_pdf_service(document)
+
+    bytes = utils.getBytes(CONVERTIDO_FOLDER + NOME_ARQUIVO_FINAL + '.pdf')    
+
+    response = make_response(bytes)
+    response.headers.set('Content-Type', 'application/pdf')
+    response.headers.set('Content-Disposition', 'attachement', filename=document.filename)
     
-@app.route('/convert_to_unsearchable_pdf', methods=['GET', 'POST'])
-def convert_to_unsearchable_pdf():
-    docs = request.files['document']
-    docs.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                           secure_filename(docs.filename)))
-    
-    convert_to_unsearchable_pdf_service(docs)
+    return response
     
 if __name__ == '__main__':
     app.run(debug=True)
