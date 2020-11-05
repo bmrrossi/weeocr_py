@@ -3,3 +3,6 @@ CONVERTIDO_FOLDER = 'uploads/convertidos/'
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 
 NOME_ARQUIVO_FINAL = 'final_version'
+
+# Database
+DB_URL = 'db/database.db'
