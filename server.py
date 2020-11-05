@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 
 import utils
 
+from weeocr_py.db import db_session
+
 from ocr_service import convert_to_searchable_pdf_service
 from environment import UPLOAD_FOLDER, CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL
 
@@ -25,13 +27,17 @@ def convert_to_searchable_pdf():
     
     convert_to_searchable_pdf_service(document)
 
-    bytes = utils.getBytes(CONVERTIDO_FOLDER + NOME_ARQUIVO_FINAL + '.pdf')    
+    bytes = utils.get_bytes(CONVERTIDO_FOLDER + NOME_ARQUIVO_FINAL + '.pdf')    
 
     response = make_response(bytes)
     response.headers.set('Content-Type', 'application/pdf')
     response.headers.set('Content-Disposition', 'attachement', filename=document.filename)
     
     return response
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
     
 if __name__ == '__main__':
     app.run(debug=True)

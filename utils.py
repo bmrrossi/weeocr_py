@@ -16,7 +16,7 @@ def convert_pdf_to_image(document):
     
     return image
 
-def getBytes(path):
+def get_bytes(path):
     open_file = open(path, 'rb')
     bytes = open_file.read()
     open_file.close()
