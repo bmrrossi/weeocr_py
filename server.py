@@ -11,7 +11,7 @@ from weeocr_py.db import db_session
 from ocr_service import convert_to_searchable_pdf_service
 from environment import UPLOAD_FOLDER, CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL
 
-app = Flask(__name__)
+app = Flask('weeocr-app')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
