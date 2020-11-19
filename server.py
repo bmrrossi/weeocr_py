@@ -6,13 +6,14 @@ from werkzeug.utils import secure_filename
 
 import utils
 
-from weeocr_py.db import db_session
-
 from ocr_service import convert_to_searchable_pdf_service
-from environment import UPLOAD_FOLDER, CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL
+from environment import UPLOAD_FOLDER, CONVERTIDO_FOLDER, NOME_ARQUIVO_FINAL, QRCODE_FOLDER, CODE128_FOLDER
+from pyzbar_functions import decode_code128, decode_qrcode
 
 app = Flask('weeocr-app')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['QRCODE_FOLDER'] = QRCODE_FOLDER
+app.config['CODE128_FOLDER'] = CODE128_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 @app.route('/')
@@ -35,9 +36,21 @@ def convert_to_searchable_pdf():
     
     return response
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
+@app.route('/get_data_from_qrcode', methods=['GET', 'POST'])
+def get_data_from_qrcode():
+    document = request.files['document']
+    document.save(os.path.join(app.config['QRCODE_FOLDER'],
+                               secure_filename(document.filename)))
     
+    return decode_qrcode(document.filename)
+
+@app.route('/get_data_from_code128', methods=['GET', 'POST'])
+def get_data_from_code128():
+    document = request.files['document']
+    document.save(os.path.join(app.config['CODE128_FOLDER'],
+                               secure_filename(document.filename)))
+    
+    return decode_code128(document.filename)
+
 if __name__ == '__main__':
     app.run(debug=True)
